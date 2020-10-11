@@ -8,8 +8,8 @@ imagenet_stats = {'mean': [0.485, 0.456, 0.406], 'std': [0.229, 0.224, 0.225]}
 class Dataset:
     def __init__(self, path, get_labels, get_image_files):
         self.path = path
-        self.image_files = get_image_files(self.path) #  list of image file path
-        self.labels = get_labels(self.image_files) #  dict of image file to label json dict
+        self.image_files = get_image_files(self.path)  #  list of image file path
+        self.labels = {p.stem: get_labels(p) for p in self.image_files}  #  dict of image file to label json dict
         self.tfms = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize(**imagenet_stats)
