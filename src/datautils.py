@@ -60,9 +60,7 @@ def create_label_df(path):
     labels = [get_label(p) for p in image_files]
     label_df = pd.DataFrame(labels)
     label_df.fillna(' ', inplace=True)
-    vocab_df = label_df['company']+label_df['address'] +\
-               label_df['date']+label_df['total']
-    return vocab_df
+    return label_df
 
 
 def create_encoding(df):
@@ -70,7 +68,9 @@ def create_encoding(df):
     Creates Character level encoding
     """
     vocab = []
-    [vocab.extend(row) for row in df]
+    vocab_df = df['company']+df['address'] +\
+               df['date']+df['total']
+    [vocab.extend(row) for row in vocab_df]
     enc = LabelEncoder()
     enc.fit(vocab)
     return enc
