@@ -26,5 +26,10 @@ class Dataset:
         targets = self.labels[img_path.stem]
         return {
             'images': img,
-            'targets': targets
-        }   
+            'company': targets['company'],
+            'address': targets['address'],
+            'date': targets['date'],
+            'total': targets['total'],
+            
+        }
+
