@@ -1,4 +1,6 @@
 import json
+from sklearn.preprocessing import LabelEncoder
+import pandas as pd
 from pathlib import Path
 Path.ls = lambda x: list(x.iterdir())
 
@@ -48,3 +50,27 @@ def get_label(img_path):
     with open(label_path) as f:
         label = json.load(f)
     return label
+
+
+def create_label_df(path): 
+    """
+    Creates a label df with all labels concatenated.
+    """
+    image_files = get_images(path)
+    labels = [get_label(p) for p in image_files]
+    label_df = pd.DataFrame(labels)
+    label_df.fillna(' ', inplace=True)
+    vocab_df = label_df['company']+label_df['address'] +\
+               label_df['date']+label_df['total']
+    return vocab_df
+
+
+def create_encoding(df):
+    """
+    Creates Character level encoding
+    """
+    vocab = []
+    [vocab.extend(row) for row in df]
+    enc = LabelEncoder()
+    enc.fit(vocab)
+    return enc
