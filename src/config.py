@@ -1,2 +1,2 @@
-DATA_PATH = 'input/'
+DATA_PATH = 'input/train_data'
 DEVICE = 'cuda'
