@@ -26,12 +26,13 @@ class Dataset:
     
         targets = self.labels[img_path.stem]
         for k, v in targets.items():
-            targets[k] = self.label_enc.transform(list(v))
+            # adding 1 to the encoded labels to reserve 0 for blank
+            targets[k] = self.label_enc.transform(list(v)) + 1
         
         return {
             'images': img,
             'company': torch.tensor(targets['company'], dtype=torch.long),
-            'address':torch.tensor(targets['address'], dtype=torch.long),
+            'address': torch.tensor(targets['address'], dtype=torch.long),
             'date': torch.tensor(targets['date'], dtype=torch.long),
             'total': torch.tensor(targets['total'], dtype=torch.long),
             
