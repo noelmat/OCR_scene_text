@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from torchvision import transforms
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -11,6 +12,12 @@ class Dataset:
         self.image_files = get_image_files(self.path)  #  list of image file path
         self.labels = {p.stem: get_labels(p) for p in self.image_files}  #  dict of image file to label json dict
         self.label_enc = label_enc
+        self.max_len = {
+            'company': 64,
+            'address': 160,
+            'date': 16,
+            'total': 16
+        }
         self.tfms = transforms.Compose([
             transforms.Resize(size),
             transforms.ToTensor(),
@@ -28,7 +35,10 @@ class Dataset:
         targets = self.labels[img_path.stem].copy()
         for k, v in targets.items():
             # adding 1 to the encoded labels to reserve 0 for blank
-            targets[k] = self.label_enc.transform(list(v)) + 1
+            v = self.label_enc.transform(list(v)) + 1
+            padding_len = self.max_len[k] - len(v)
+            v = np.append(v, np.zeros(padding_len))
+            targets[k] = v            
         
         return {
             'images': img,
