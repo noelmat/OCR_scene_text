@@ -29,7 +29,7 @@ class Dataset:
 
     def __getitem__(self, item):
         img_path = self.image_files[item]
-        img = Image.open(img_path)
+        img = Image.open(img_path).convert('RGB')
         img = self.tfms(img)
     
         targets = self.labels[img_path.stem].copy()
