@@ -24,7 +24,7 @@ class Dataset:
         img = Image.open(img_path)
         img = self.tfms(img)
     
-        targets = self.labels[img_path.stem]
+        targets = self.labels[img_path.stem].copy()
         for k, v in targets.items():
             # adding 1 to the encoded labels to reserve 0 for blank
             targets[k] = self.label_enc.transform(list(v)) + 1
