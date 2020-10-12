@@ -56,16 +56,17 @@ def eval_loop(dl, model, criterion, device):
         'date': [],
         'total': []
     }
-    for batch in tqdm(dl, total=len(dl), position=0, leave=True):
-        for k,v in batch.items():
-            batch[k] = v.to(device)
-        x = batch.pop('images')
-        preds = model(x,batch)
-        losses.append(loss.item())
-        for k,v in batch.items():
-            batch[k] = v.to('cpu')
+    with torch.no_grad(): 
+        for batch in tqdm(dl, total=len(dl), position=0, leave=True):
+            for k,v in batch.items():
+                batch[k] = v.to(device)
+            x = batch.pop('images')
+            preds = model(x,batch)
+            losses.append(loss.item())
+            for k,v in batch.items():
+                batch[k] = v.to('cpu')
 
-        for i,k in enumerate(predictions.keys()):
-            predictions[k].append(outputs['preds'][i].detach().cpu().numpy())
+            for i,k in enumerate(predictions.keys()):
+                predictions[k].append(outputs['preds'][i].detach().cpu().numpy())
     return losses, outputs,
 
