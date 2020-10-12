@@ -47,7 +47,7 @@ def run():
     
     for epoch in range(config.N_EPOCHS):
         engine.train_loop(train_dl,ocr_model, opt, scheduler, None, config.DEVICE)
-        losses, output = engine.eval_loop(valid_dl, model, None, config.DEVICE)
+        losses, output = engine.eval_loop(valid_dl, ocr_model, None, config.DEVICE)
 
         print(torch.tensor(losses).mean().item())
 
