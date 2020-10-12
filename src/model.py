@@ -18,7 +18,7 @@ class Model(nn.Module):
             nn.ReLU(),
         )
 
-        self.linear_1 = nn.Linear(32000, 512)
+        self.linear_1 = nn.Linear(38400, 512)
         self.drop_1 = nn.Dropout(0.2)
         self.lstm = nn.LSTM(
             512, 128, num_layers=2, batch_first=True, dropout=0.2, bidirectional=True
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     image_files = datautils.get_images(path)
     train_paths, valid_paths = train_test_split(image_files, test_size=0.3, random_state=42)
     encoder = joblib.load('label_encoder.pkl')
-    ds = dataset.Dataset(train_paths, datautils.get_label, encoder,size=(1000,500))
+    ds = dataset.Dataset(train_paths, datautils.get_label, encoder,size=(1200,600))
     dl = torch.utils.data.DataLoader(ds, batch_size=10)
     batch = next(iter(dl))
     images = batch.pop('images')
