@@ -18,7 +18,7 @@ class Model(nn.Module):
             nn.ReLU(),
         )
 
-        self.linear_1 = nn.Linear(32000, 512)
+        self.linear_1 = nn.Linear(38400, 512)
         self.drop_1 = nn.Dropout(0.2)
         self.lstm = nn.LSTM(
             512, 128, num_layers=2, batch_first=True, dropout=0.2, bidirectional=True
@@ -36,9 +36,9 @@ class Model(nn.Module):
             fill_value=log_softmax_values.size(0),
             dtype=torch.int32
         )
-        print(input_lengths)
+        # print(input_lengths)
         target_lengths = targets[:,0]
-        print(target_lengths)
+        # print(target_lengths)
         # print(targets[:,0]+1)
         loss = nn.CTCLoss(blank=0)(
             log_softmax_values, targets[:,1:], input_lengths, target_lengths
@@ -47,17 +47,17 @@ class Model(nn.Module):
 
     def forward(self, x, targets=None):
         bs, _, _, _ = x.shape
-        print(x.shape)
+        # print(x.shape)
         x = self.cnn_extractor(x)
-        print(x.shape)
+        # print(x.shape)
         x = x.permute(0, 3, 1, 2)
         x = x.view(bs, x.size(1), -1)
-        print(x.shape)
+        # print(x.shape)
         x = F.relu(self.linear_1(x))
-        print(x.shape)
+        # print(x.shape)
         x = self.drop_1(x)
         x, _ = self.lstm(x)
-        print(x.shape)
+        # print(x.shape)
         x1 = self.output1(x)
         x2 = self.output2(x)
         x3 = self.output3(x)
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     image_files = datautils.get_images(path)
     train_paths, valid_paths = train_test_split(image_files, test_size=0.3, random_state=42)
     encoder = joblib.load('label_encoder.pkl')
-    ds = dataset.Dataset(train_paths, datautils.get_label, encoder,size=(1000,500))
+    ds = dataset.Dataset(train_paths, datautils.get_label, encoder,size=(1200,600))
     dl = torch.utils.data.DataLoader(ds, batch_size=10)
     batch = next(iter(dl))
     images = batch.pop('images')
