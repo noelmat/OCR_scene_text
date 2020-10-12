@@ -68,9 +68,10 @@ class Model(nn.Module):
             loss3 = self.get_loss(bs, x3.permute(1,0,2), targets['date'])
             loss4 = self.get_loss(bs, x4.permute(1,0,2), targets['total'])
 
+            mean_loss = (loss1 + loss2 + loss3 + loss4)/4
             return {
                 'preds': [x1,x2,x3,x4],
-                'losses': [loss1,loss2,loss3, loss4]
+                'losses': mean_loss
             }
 
         return {
@@ -82,15 +83,18 @@ if __name__ == "__main__":
     import dataset
     import joblib 
     from sklearn.model_selection import train_test_split
+    import engine
 
     path=datautils.Path('../input/train_data/')
     image_files = datautils.get_images(path)
     train_paths, valid_paths = train_test_split(image_files, test_size=0.3, random_state=42)
     encoder = joblib.load('label_encoder.pkl')
-    ds = dataset.Dataset(train_paths, datautils.get_label, encoder,size=(1200,600))
+    ds = dataset.Dataset(train_paths[:100], datautils.get_label, encoder,size=(1200,600))
     dl = torch.utils.data.DataLoader(ds, batch_size=10)
+
     batch = next(iter(dl))
     images = batch.pop('images')
     model = Model(len(encoder.classes_))
-    x = model(images, batch)
-    print(x['losses'])
+    opt = torch.optim.Adam(model.parameters())
+    losses, preds =  engine.train_loop(dl, model, opt, None, None, 'cpu')
+    print(losses)
