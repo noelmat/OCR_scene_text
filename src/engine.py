@@ -61,8 +61,8 @@ def eval_loop(dl, model, criterion, device):
             for k,v in batch.items():
                 batch[k] = v.to(device)
             x = batch.pop('images')
-            preds = model(x,batch)
-            losses.append(loss.item())
+            outputs = model(x,batch)
+            loss = outputs['losses']
             for k,v in batch.items():
                 batch[k] = v.to('cpu')
 
