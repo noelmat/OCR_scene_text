@@ -68,11 +68,14 @@ class Model(nn.Module):
             loss3 = self.get_loss(bs, x3.permute(1,0,2), targets['date'])
             loss4 = self.get_loss(bs, x4.permute(1,0,2), targets['total'])
 
-        return {
-            'preds': [x1,x2,x3,x4],
-            'losses': [loss1,loss2,loss3, loss4]
-        }
+            return {
+                'preds': [x1,x2,x3,x4],
+                'losses': [loss1,loss2,loss3, loss4]
+            }
 
+        return {
+            'preds': [x1,x2,x3,x4]
+        }
 
 if __name__ == "__main__":
     import datautils
