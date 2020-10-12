@@ -27,7 +27,6 @@ def train_loop(dl, model, optimizer, scheduler, criterion, device):
         losses.append(loss.item())
         for k,v in batch.items():
             batch[k] = v.to('cpu')
-
         for i,k in enumerate(predictions.keys()):
             predictions[k].append(outputs['preds'][i].detach().cpu().numpy())
     return losses, predictions
@@ -65,7 +64,7 @@ def eval_loop(dl, model, criterion, device):
             loss = outputs['losses']
             for k,v in batch.items():
                 batch[k] = v.to('cpu')
-
+            losses.append(loss.item())
             for i,k in enumerate(predictions.keys()):
                 predictions[k].append(outputs['preds'][i].detach().cpu().numpy())
     return losses, outputs,
