@@ -20,13 +20,14 @@ class Model(nn.Module):
 
         self.linear_1 = nn.Linear(11264, 128)
         self.drop_1 = nn.Dropout(0.2)
-        self.lstm = nn.LSTM(128, 64, num_layers=2, batch_first=True,
-                            dropout=0.2, bidirectional=True)
-        
-        self.output1 = nn.Linear(128, num_classes+1)
-        self.output2 = nn.Linear(128, num_classes+1)
-        self.output3 = nn.Linear(128, num_classes+1)
-        self.output4 = nn.Linear(128, num_classes+1)
+        self.lstm = nn.LSTM(
+            128, 64, num_layers=2, batch_first=True, dropout=0.2, bidirectional=True
+        )
+
+        self.output1 = nn.Linear(128, num_classes + 1)
+        self.output2 = nn.Linear(128, num_classes + 1)
+        self.output3 = nn.Linear(128, num_classes + 1)
+        self.output4 = nn.Linear(128, num_classes + 1)
 
     def forward(self, x):
         bs, _, _, _ = x.size()
@@ -42,7 +43,7 @@ if __name__ == "__main__":
     input_img = torch.rand(10, 3, 700, 300)
     model = Model(10)
     x = model(input_img)
-    x = x.permute(0,3,1,2)
+    x = x.permute(0, 3, 1, 2)
     print(x.shape)
-    x = x.view(10, x.size(1),-1)
+    x = x.view(10, x.size(1), -1)
     print(x.shape)
