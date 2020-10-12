@@ -8,14 +8,11 @@ imagenet_stats = {"mean": [0.485, 0.456, 0.406], "std": [0.229, 0.224, 0.225]}
 
 
 class Dataset:
-    def __init__(self, path, get_labels, get_image_files, label_enc, size=(700, 300)):
-        self.path = path
-        self.image_files = get_image_files(self.path)  #  list of image file path
-        self.labels = {
-            p.stem: get_labels(p) for p in self.image_files
-        }  #  dict of image file to label json dict
+    def __init__(self, image_paths, get_labels,  label_enc, ds_type='train', size=(700, 300)):
+        self.image_paths = image_paths
+        self.get_labels = get_labels
         self.label_enc = label_enc
-        self.max_len = {"company": 64, "address": 160, "date": 16, "total": 16}
+        self.max_len = {"company": 50, "address": 160, "date": 16, "total": 16}
         self.tfms = transforms.Compose(
             [
                 transforms.Resize(size),
@@ -25,20 +22,24 @@ class Dataset:
         )
 
     def __len__(self):
-        return len(self.image_files)
+        return len(self.image_paths)
 
     def __getitem__(self, item):
-        img_path = self.image_files[item]
+        img_path = self.image_paths[item]
         img = Image.open(img_path).convert("RGB")
         img = self.tfms(img)
-
-        targets = self.labels[img_path.stem].copy()
+        
+        
+        targets = self.get_labels(img_path)
         for k, v in targets.items():
             # adding 1 to the encoded labels to reserve 0 for blank
             v = self.label_enc.transform(list(v)) + 1
-            padding_len = self.max_len[k] - len(v)
-            v = np.append(v, np.zeros(padding_len))
-            targets[k] = v
+            v_len = len(v)
+            padding_len = self.max_len[k] - v_len -1
+            new_arr = np.zeros(self.max_len[k])
+            new_arr[0] = v_len
+            new_arr[1:v_len+1]=v
+            targets[k] = new_arr
 
         return {
             "images": img,
